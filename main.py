@@ -1,13 +1,31 @@
 import discord
+from discord.ext import commands
 import os
 import json
 import requests
-import twitter
 from keep_alive import keep_alive
 
 DISCORD_GUILD=os.getenv('DISCORD_GUILD')
+DISCORD_TOKEN=os.getenv('DISCORD_TOKEN')
 
-client = discord.Client()
+bot = commands.Bot(command_prefix='/')
+
+@bot.command(name='pinchme')
+@commands.has_role('DXAdmin')
+async def pinchme(ctx):
+    print("auw!")
+    await ctx.send("Auw!")
+
+@bot.command(name='quote', help='Respond with a random qoute from someone famous.')
+async def quote(ctx):
+  quote = get_quote()
+  print(f"Quote: {quote}")
+  await ctx.send(quote)
+
+@bot.event
+async def on_command_error(ctx, error):
+    if isinstance(error, commands.errors.CheckFailure):
+        await ctx.send('You do not have the correct role for this command.')
 
 def get_quote():
   response = requests.get("https://zenquotes.io/api/random")
@@ -15,30 +33,23 @@ def get_quote():
   quote = json_data[0]['q'] + " -" + json_data[0]['a']
   return(quote)
 
-
-@client.event
+@bot.event
 async def on_ready():
-  print('We have logged in as {0.user}\n'.format(client))
-  guild = discord.utils.get(client.guilds, name=DISCORD_GUILD)
+  print(f'Bot has logged in as {bot.user}\n')
+  guild = discord.utils.get(bot.guilds, name=DISCORD_GUILD)
   print(
-      f'{client.user} is connected to the following guild:\n'
+      f'{bot.user} is connected to the following guild:\n'
       f'{guild.name}(id: {guild.id})'
   )
 
+@bot.event
+async def on_member_join(member):
+    await member.create_dm()
+    await member.dm_channel.send(
+        f'Hi {member.name}, welcome to my the DXers community, hope you will enjoy yourself here!'
+    )
 
-@client.event
-async def on_message(message):
-  if message.author == client.user:
-    #don't respond to ourself
-    return
 
-  msg = message.content
-  if msg.startswith('/quote'):
-    quote = get_quote()
-    await message.channel.send(quote)
-
-  if msg.startswith('/listall'):
-    channels = get_all_channels()
 
 keep_alive()
-client.run(os.getenv('DISCORD_TOKEN'))
+bot.run(DISCORD_TOKEN)
