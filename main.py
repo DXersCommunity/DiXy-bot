@@ -5,6 +5,7 @@ import requests
 import twitter
 from keep_alive import keep_alive
 
+DISCORD_GUILD=os.getenv('DISCORD_GUILD')
 
 client = discord.Client()
 
@@ -15,10 +16,15 @@ def get_quote():
   return(quote)
 
 
-
 @client.event
 async def on_ready():
   print('We have logged in as {0.user}\n'.format(client))
+  guild = discord.utils.get(client.guilds, name=DISCORD_GUILD)
+  print(
+      f'{client.user} is connected to the following guild:\n'
+      f'{guild.name}(id: {guild.id})'
+  )
+
 
 @client.event
 async def on_message(message):
