@@ -22,6 +22,11 @@ async def quote(ctx):
   print(f"Quote: {quote}")
   await ctx.send(quote)
 
+@bot.command(name='server')
+async def fetchServerInfo(ctx):
+	guild = ctx.guild
+	await ctx.send(f'Server Name: {guild.name}\nNumber of Users: {guild.member_count}\nNumber of Channels: {len(guild.channels)}')
+	
 @bot.event
 async def on_command_error(ctx, error):
     if isinstance(error, commands.errors.CheckFailure):
@@ -46,9 +51,8 @@ async def on_ready():
 async def on_member_join(member):
     await member.create_dm()
     await member.dm_channel.send(
-        f'Hi {member.name}, welcome to my the DXers community, hope you will enjoy yourself here!'
+        f'Hi {member.name}, welcome to the DXers community.\n We hope you will enjoy yourself here!'
     )
-
 
 
 keep_alive()
