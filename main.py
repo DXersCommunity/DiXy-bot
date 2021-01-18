@@ -5,11 +5,17 @@ import json
 import requests
 from keep_alive import keep_alive
 
+#start the keep alive server
+keep_alive()
+
+#get the discord secrets
 DISCORD_GUILD=os.getenv('DISCORD_GUILD')
 DISCORD_TOKEN=os.getenv('DISCORD_TOKEN')
 
+#connect to Discord
 bot = commands.Bot(command_prefix='/')
 
+#commands for bot DiXy here
 @bot.command(name='pinchme')
 @commands.has_role('DXAdmin')
 async def pinchme(ctx):
@@ -26,6 +32,11 @@ async def quote(ctx):
 async def fetchServerInfo(ctx):
 	guild = ctx.guild
 	await ctx.send(f'Server Name: {guild.name}\nNumber of Users: {guild.member_count}\nNumber of Channels: {len(guild.channels)}')
+
+@bot.command(name='ping')
+async def ping(ctx):
+  channel = bot.get_channel(799999137168228413)
+  await channel.send("Pong!")
 	
 @bot.event
 async def on_command_error(ctx, error):
@@ -54,6 +65,4 @@ async def on_member_join(member):
         f'Hi {member.name}, welcome to the DXers community.\n We hope you will enjoy yourself here!'
     )
 
-
-keep_alive()
 bot.run(DISCORD_TOKEN)
